@@ -1,8 +1,8 @@
-var makeError = require('./lib/make-error')
-var makeMiddleware = require('./lib/make-middleware')
+var makeError = require('./lib/make-error');
+var makeMiddleware = require('./lib/make-middleware');
 
-var diskStorage = require('./storage/disk')
-var memoryStorage = require('./storage/memory')
+var diskStorage = require('./storage/disk');
+var memoryStorage = require('./storage/memory');
 
 function allowAll (req, file, cb) {
   cb(null, true)
@@ -17,14 +17,14 @@ function Multer (options) {
     this.storage = memoryStorage()
   }
 
-  this.limits = options.limits
+  this.limits = options.limits;
   this.fileFilter = options.fileFilter || allowAll
 }
 
 Multer.prototype._makeMiddleware = function (fields, fileStrategy) {
   function setup () {
-    var fileFilter = this.fileFilter
-    var filesLeft = Object.create(null)
+    var fileFilter = this.fileFilter;
+    var filesLeft = Object.create(null);
 
     fields.forEach(function (field) {
       if (typeof field.maxCount === 'number') {
@@ -32,7 +32,7 @@ Multer.prototype._makeMiddleware = function (fields, fileStrategy) {
       } else {
         filesLeft[field.name] = Infinity
       }
-    })
+    });
 
     function wrappedFileFilter (req, file, cb) {
       if ((filesLeft[file.fieldname] || 0) <= 0) {
@@ -52,19 +52,19 @@ Multer.prototype._makeMiddleware = function (fields, fileStrategy) {
   }
 
   return makeMiddleware(setup.bind(this))
-}
+};
 
 Multer.prototype.single = function (name) {
   return this._makeMiddleware([{ name: name, maxCount: 1 }], 'VALUE')
-}
+};
 
 Multer.prototype.array = function (name, maxCount) {
   return this._makeMiddleware([{ name: name, maxCount: maxCount }], 'ARRAY')
-}
+};
 
 Multer.prototype.fields = function (fields) {
   return this._makeMiddleware(fields, 'OBJECT')
-}
+};
 
 function multer (options) {
   if (options === undefined) {
@@ -78,6 +78,6 @@ function multer (options) {
   throw new TypeError('Expected object for argument options')
 }
 
-module.exports = multer
-module.exports.diskStorage = diskStorage
-module.exports.memoryStorage = memoryStorage
+module.exports = multer;
+module.exports.diskStorage = diskStorage;
+module.exports.memoryStorage = memoryStorage;
